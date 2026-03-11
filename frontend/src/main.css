@@ -1,0 +1,165 @@
+@import 'https://cdn.jsdelivr.net/npm/@vue-flow/core@1.48.2/dist/style.css';
+@import 'https://cdn.jsdelivr.net/npm/@vue-flow/core@1.48.2/dist/theme-default.css';
+@import 'https://cdn.jsdelivr.net/npm/@vue-flow/controls@latest/dist/style.css';
+@import 'https://cdn.jsdelivr.net/npm/@vue-flow/minimap@latest/dist/style.css';
+@import 'https://cdn.jsdelivr.net/npm/@vue-flow/node-resizer@latest/dist/style.css';
+
+
+/* App base */
+
+html,
+body,
+#app {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  font-family: "JetBrains Mono", monospace;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  color: #2c3e50;
+}
+
+
+/* Layout */
+
+.layout {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+}
+
+
+/* Tree panel */
+
+.tree-panel {
+  flex: 2;
+  border-right: 1px solid #e5e7eb;
+  display: flex;
+  flex-direction: column;
+}
+
+
+/* Right panel */
+
+.content-panel {
+  flex: 1;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+
+/* VueFlow container */
+
+.flow {
+  flex: 1;
+}
+
+
+/* Toolbars */
+
+.toolbar,
+.layout-panel {
+  display: flex;
+  gap: 10px;
+  padding: 10px;
+  border-bottom: 1px solid #eee;
+}
+
+.layout-panel {
+  margin-top: auto;
+}
+
+
+/* Form fields */
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.field label {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.field input {
+  padding: 6px 8px;
+  border-radius: 6px;
+  border: 1px solid #d1d5db;
+}
+
+
+/* Buttons */
+
+button {
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: none;
+  background: #6366f1;
+  color: white;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+button:hover {
+  background: #4f46e5;
+}
+
+
+/* VueFlow node states */
+
+.vue-flow__node.intersecting {
+  background-color: #f97316;
+}
+
+.vue-flow__node.found {
+  background-color: #22c55e;
+}
+
+.vue-flow__node.notFound {
+  opacity: 0.35;
+}
+
+.vue-flow__node.selected {
+  background-color: #6366f1;
+  color: white;
+}
+
+
+/* Minimap */
+
+.vue-flow__minimap {
+  transform: scale(0.75);
+  transform-origin: bottom right;
+}
+
+
+/* VueFlow panel */
+
+.vue-flow__panel {
+  background: #2d3748;
+  color: white;
+  border-radius: 8px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.vue-flow__panel .field {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.vue-flow__panel input {
+  padding: 4px;
+  border-radius: 4px;
+}

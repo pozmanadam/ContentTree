@@ -1,0 +1,22 @@
+services:
+  backend:
+    image: ptc-demo-backend:latest
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: demo-backend
+    ports:
+      - "8080:8080"
+
+  frontend:
+    image: ptc-demo-frontend:latest
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        VITE_API_URL: http://localhost:8080/api
+    container_name: demo-frontend
+    depends_on:
+      - backend
+    ports:
+      - "5173:80"
