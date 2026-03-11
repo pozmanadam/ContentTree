@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class TreeNodeService {
 
-    private TreeNode rootNode = new TreeNode("root", "Start of the thee");
+    private TreeNode rootNode = new TreeNode("root", "Start of the tree");
     private final Map<Integer, TreeNode> nodes = new HashMap<>() {{ put(rootNode.getId(), rootNode); }};
     private int idCounter = 0;
 

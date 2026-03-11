@@ -9,8 +9,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -23,7 +24,7 @@ import org.springframework.web.context.WebApplicationContext;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 class TreeNodeControllerTest {
 
-    @org.springframework.beans.factory.annotation.Autowired
+    @Autowired
     private WebApplicationContext context;
 
     private MockMvc mockMvc;
@@ -34,35 +35,35 @@ class TreeNodeControllerTest {
     }
 
     @Test
-    void getTreeReturnsDefaultRootNode() throws Exception {
+    void getTreeWhenCalledReturnsDefaultRootNode() throws Exception {
         mockMvc.perform(get("/api/tree"))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.id").value(0))
             .andExpect(jsonPath("$.name").value("root"))
-            .andExpect(jsonPath("$.content").value("Start of the thee"))
+            .andExpect(jsonPath("$.content").value("Start of the tree"))
             .andExpect(jsonPath("$.childrens").isArray());
     }
 
     @Test
-    void createNodeReturnsCreatedNode() throws Exception {
+    void createNodeWhenPayloadIsValidReturnsCreatedNode() throws Exception {
         mockMvc.perform(post("/api/tree")
                 .contentType(APPLICATION_JSON)
                 .content("""
                     {
-                      "name": "Chapter 1",
-                      "content": "Intro",
+                      "name": "node",
+                      "content": "content",
                       "parentId": "0"
                     }
                     """))
             .andExpect(status().isCreated())
             .andExpect(jsonPath("$.id").value(1))
-            .andExpect(jsonPath("$.name").value("Chapter 1"))
-            .andExpect(jsonPath("$.content").value("Intro"))
-            .andExpect(jsonPath("$.parentId").value(0));
+            .andExpect(jsonPath("$.name").value("node"))
+            .andExpect(jsonPath("$.content").value("content"))
+            .andExpect(jsonPath("$.parentId").value("0"));
     }
 
     @Test
-    void createNodeRequiresNameAndContent() throws Exception {
+    void createNodeWhenContentIsMissingReturnsBadRequest() throws Exception {
         mockMvc.perform(post("/api/tree")
                 .contentType(APPLICATION_JSON)
                 .content("""
@@ -75,7 +76,20 @@ class TreeNodeControllerTest {
     }
 
     @Test
-    void getNodeReturnsCreatedNode() throws Exception {
+    void createNodeWhenNameIsMissingReturnsBadRequest() throws Exception {
+        mockMvc.perform(post("/api/tree")
+                .contentType(APPLICATION_JSON)
+                .content("""
+                    {
+                      "content": "Has content"
+                    }
+                    """))
+            .andExpect(status().isBadRequest())
+            .andExpect(content().string(""));
+    }
+
+    @Test
+    void getNodeWhenNodeExistsReturnsNode() throws Exception {
         createNode("Node A", "Alpha", "0");
 
         mockMvc.perform(get("/api/tree").param("id", "1"))
@@ -86,7 +100,14 @@ class TreeNodeControllerTest {
     }
 
     @Test
-    void updateNodeReturnsUpdatedNode() throws Exception {
+    void getNodeWhenNodeDoesNotExistReturnsNotFound() throws Exception {
+        mockMvc.perform(get("/api/tree").param("id", "-1"))
+            .andExpect(status().isNotFound())
+            .andExpect(content().string(""));
+    }
+
+    @Test
+    void updateNodeWhenPayloadIsValidReturnsUpdatedNode() throws Exception {
         createNode("Original", "Before", "0");
 
         mockMvc.perform(put("/api/tree")
@@ -105,12 +126,12 @@ class TreeNodeControllerTest {
     }
 
     @Test
-    void updateNodeReturnsNotFoundForMissingNode() throws Exception {
+    void updateNodeWhenNodeDoesNotExistReturnsNotFound() throws Exception {
         mockMvc.perform(put("/api/tree")
                 .contentType(APPLICATION_JSON)
                 .content("""
                     {
-                      "id": "999",
+                      "id": "-1",
                       "name": "Updated",
                       "content": "After"
                     }
@@ -120,7 +141,49 @@ class TreeNodeControllerTest {
     }
 
     @Test
-    void searchNodesReturnsMatchingIds() throws Exception {
+    void updateNodeWhenIdIsMissingReturnsBadRequest() throws Exception {
+        mockMvc.perform(put("/api/tree")
+                .contentType(APPLICATION_JSON)
+                .content("""
+                    {
+                      "name": "Updated",
+                      "content": "After"
+                    }
+                    """))
+            .andExpect(status().isBadRequest())
+            .andExpect(content().string(""));
+    }
+    
+    @Test
+    void updateNodeWhenNameIsMissingReturnsBadRequest() throws Exception {
+        mockMvc.perform(put("/api/tree")
+                .contentType(APPLICATION_JSON)
+                .content("""
+                    {
+                      "id": "1",
+                      "content": "After"
+                    }
+                    """))
+            .andExpect(status().isBadRequest())
+            .andExpect(content().string(""));
+    }
+    
+    @Test
+    void updateNodeWhenContentIsMissingReturnsBadRequest() throws Exception {
+        mockMvc.perform(put("/api/tree")
+                .contentType(APPLICATION_JSON)
+                .content("""
+                    {
+                      "id": "1",
+                      "name": "Updated",
+                    }
+                    """))
+            .andExpect(status().isBadRequest())
+            .andExpect(content().string(""));
+    }
+    
+    @Test
+    void searchNodesWhenSearchMatchesReturnsMatchingIds() throws Exception {
         createNode("Readme", "Contains searchable text", "0");
         createNode("Notes", "No match here", "0");
 
@@ -130,7 +193,7 @@ class TreeNodeControllerTest {
     }
 
     @Test
-    void deleteNodeReturnsOkThenNotFoundForSecondDelete() throws Exception {
+    void deleteNodeWhenNodeIsDeletedTwiceReturnsOkThenNotFound() throws Exception {
         createNode("Disposable", "Delete me", "0");
 
         mockMvc.perform(delete("/api/tree").param("id", "1"))
@@ -141,7 +204,7 @@ class TreeNodeControllerTest {
     }
 
     @Test
-    void reorganiseMovesNodeUnderNewParent() throws Exception {
+    void reorganiseWhenNewParentIsValidMovesNodeUnderNewParent() throws Exception {
         createNode("Parent A", "A", "0");
         createNode("Parent B", "B", "0");
         createNode("Child", "C", "1");
@@ -159,10 +222,15 @@ class TreeNodeControllerTest {
         mockMvc.perform(get("/api/tree").param("id", "3"))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.parentId").value(2));
+
+        mockMvc.perform(get("/api/tree").param("id", "2"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.childrens[0].id").value(3))
+            .andExpect(jsonPath("$.childrens[0].parentId").value(2));
     }
 
     @Test
-    void helloEndpointReturnsGreeting() throws Exception {
+    void getHelloWhenCalledReturnsGreeting() throws Exception {
         mockMvc.perform(get("/api/tree/hello"))
             .andExpect(status().isOk())
             .andExpect(content().string("Hello, World!"));

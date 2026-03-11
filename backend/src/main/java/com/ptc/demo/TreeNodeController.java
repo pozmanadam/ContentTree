@@ -52,7 +52,7 @@ public class TreeNodeController {
 
     @PutMapping
     public ResponseEntity<TreeNode> updateNode(@RequestBody Map<String, String> payload) {
-        if (payload.get("id") != null) {
+        if (payload.get("id") != null && payload.get("name") != null && payload.get("content") != null) {
             var node = service.getNode(Integer.valueOf(payload.get("id")));
             if(node == null) {
                 return ResponseEntity
@@ -80,6 +80,11 @@ public class TreeNodeController {
 
     @GetMapping(params = "id")
     public ResponseEntity<TreeNode> getNode(@RequestParam int id) {
+        if(service.getNode(id) == null) {
+            return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(null);
+        }
         return new ResponseEntity<TreeNode>(service.getNode(id), HttpStatus.OK);
     }
     
