@@ -75,3 +75,18 @@ mvn clean test
 
 Jacoco test coverage report availale at:
 /backend/target/site/jacoco/index.html
+
+### Features
+
+- Creating new nodes only possible if you selected one.
+- Deleting a node also removes all the child nodes.
+  - Cannot delete the root node.
+  - Deleting the root node only removes the child nodes.
+- Update the selected node name and content.
+- Searching within the nodes name and content.
+- Horizontal and Vertical layout.
+- Reoganising possible via drag and drop.
+  - Selected node cannot be intersected with multiple nodes.   
+  - The selected node also carries the child nodes.
+  - If the target node is a descedant of the selected node only carries the childs up until the target node. Meanwhile the target node parent will be the selected node previous parent.  
+
