@@ -1,7 +1,7 @@
 # Content Tree Demo
 
 - `backend/` - Spring Boot API
-- `frontend/` - Vue UI
+- `frontend/` - Vue Flow UI
 
 ## Requirements
 
